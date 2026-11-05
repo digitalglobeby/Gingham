@@ -1,0 +1,52 @@
+Gingham License
+Copyright © 2026 Dalis Polikhranidi. All rights reserved.
+
+Gingham and GinghamICU (the "Software") are distributed as binary frameworks.
+This license lets you use them; it doesn't sell them or give you their source.
+
+1. Free use. You may use the Software, free of charge, in any app or tool,
+   personal or commercial, free or paid, public or internal, and ship it to
+   your users as part of your app (inside its bundle). Without a license key
+   a table of the Software shows up to 10,000 rows of its data source and a
+   notice that more need a license key.
+
+2. License keys. A license key, bought from the copyright holder or given by
+   them, removes the row limit for the apps (bundle identifiers) and the
+   major version of the Software it names. Keys are sold per developer: each
+   person who writes or debugs code that uses the Software in a licensed app
+   needs one. A key for a major version (for example 1.x) covers every
+   release of that major version, and apps shipped with it stay licensed
+   when the key's term ends. Trial keys work until the day they name. The
+   terms of a key beyond this license are those agreed when it is bought.
+
+3. Restrictions. You may not:
+   a. circumvent, disable or change the row limit or the license key check,
+      or help others do it;
+   b. share or publish a license key except inside the apps it is for;
+   c. distribute the Software on its own, or as part of a library, framework,
+      SDK, component or tool for other developers, rather than of an app for
+      its users;
+   d. decompile, disassemble or otherwise reverse engineer the Software,
+      except as far as the law where you are allows it despite this term;
+   e. remove or change the Software's copyright notices.
+
+4. Third-party software. GinghamICU contains ICU (Unicode License V3) and code
+   of swift-foundation-icu (Apache License 2.0), which stay under their own
+   licenses: see THIRD-PARTY-NOTICES.md. Ship those notices with an app that
+   uses GinghamICU.
+
+5. Termination. If you break this license, it ends for you, and so do the
+   license keys you hold, unless you put things right within 30 days of being
+   told about it.
+
+6. No warranty. The Software is provided "as is", without warranty of any
+   kind, express or implied, including the warranties of merchantability,
+   fitness for a particular purpose and non-infringement.
+
+7. Limitation of liability. In no event shall the copyright holder be liable
+   for any claim, damages or other liability, whether in an action of
+   contract, tort or otherwise, arising from, out of or in connection with the
+   Software or its use, beyond the amount you paid for your license keys in
+   the twelve months before the claim.
+
+Contact: d.polikhranidi+gingham@gmail.com
