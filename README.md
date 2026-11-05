@@ -29,6 +29,8 @@ own controls do.
 
 ![Gingham, NSTableView, NSCollectionView and SwiftUI Table showing the same live trades](Assets/comparison.png)
 
+https://github.com/user-attachments/assets/f02edc07-b9fa-4bcf-b77e-f1ab2ebf632e
+
 20,000 live trades sorted by amount, 45,000 changes a second, in each table in
 turn (a Release build on Apple silicon, 120 Hz screen). Gingham sorts the rows
 itself and moves only the changed ones; NSTableView, NSCollectionView and
