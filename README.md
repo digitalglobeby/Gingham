@@ -43,7 +43,7 @@ busy (less is more room for your app). Frames: screen updates a second.
 | --- | --- | --- | --- |
 | Live trades sorted by amount: 20,000 rows, 45,000 changes a second | 23–26% · 120 frames | 86–87% · 30–31 frames | 99% · 3 frames |
 | Order book: 200,000 rows, 244,000 changes a second | 51% · 120 frames | 97% · 28 frames | doesn't load the rows |
-| Trade feed: 1,000,000 rows, 300,000 changes a second | 61% · 120 frames | 97% · 15 frames | doesn't load the rows |
+| Trade feed: 1,000,000 rows, 300,000 changes a second | 36–43% · 120 frames | 97% · 15 frames | doesn't load the rows |
 | Binance live tickers: 3,100 pairs | 58% · 120 frames | 100% · 4 frames | 99% · 18 frames |
 | Binance order books: 58,000 levels | 17% · 118 frames | 99% · 7 frames | 100% · 0 frames |
 | Sorting 1,000,000 rows by a text column | 0.15–0.26 s, the screen keeps drawing | 1.9 s, the app stops for it | — |
@@ -192,9 +192,12 @@ cases until the next major version.
 
 > [!TIP]
 > Gingham is a binary framework built with library evolution: its enums may
-> get new cases, so a `switch` over one needs `@unknown default`. Only `GHColumnItem`, `GHDataColumnItem`,
-> `GHColumnPin` and `GHColumnVisibility.State` are `@frozen` and switch
-> without it.
+> get new cases, so a `switch` over one needs `@unknown default`.
+> `GHColumnItem`, `GHDataColumnItem`, `GHColumnPin` and
+> `GHColumnVisibility.State` are `@frozen` and switch without it. So are
+> `GHCellValue` and `GHNamedColor` (since 1.0.1, so that an app makes values
+> as fast as Gingham does), but they may still get new cases in a minor
+> version: keep a `default`.
 
 ## Quick start
 
