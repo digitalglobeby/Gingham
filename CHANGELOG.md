@@ -3,6 +3,19 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.0.1
+
+- **Faster with an app's own data**: the table reads an app's values
+  faster for export, copy, column widths and scrolling (export of 200,000
+  rows of 12 columns 20% faster).
+- **Lighter live feeds**: on the Mac, a feed keeps the main thread a third
+  to two thirds less busy, and a quieter one shows new values 6–8 ms sooner;
+  flashes of changed values take half the frames on 120 Hz displays.
+- **Faster text sorts of an app's own data**: about 20% for 10 million
+  rows.
+- **Less memory for sorted and searched huge tables** (about 10% less a
+  row).
+
 ## 1.0.0
 
 The first release as Gingham, a binary package for macOS 14, iOS and iPadOS
