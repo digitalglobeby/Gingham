@@ -3,6 +3,15 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.0.2
+
+- **Conditional formats on numbers shown as text**: data bars, color scales
+  and text colors now show on cells whose numbers the app writes as its own
+  text (a database's exact digits, its own notation) and sorts by value.
+- **Fixed**: on the Mac, a table could keep showing an older frame until the
+  next change, for example a header at the widths before its columns were
+  fitted. Such a frame is now drawn again.
+
 ## 1.0.1
 
 - **Faster with an app's own data**: the table reads an app's values
