@@ -1,5 +1,5 @@
 // swift-tools-version: 6.0
-// Gingham 1.0.1: binary frameworks for macOS 14, iOS and iPadOS 17 and later
+// Gingham 1.0.2: binary frameworks for macOS 14, iOS and iPadOS 17 and later
 // (Apple silicon). Free up to 10,000 rows a table; see LICENSING.md.
 
 import PackageDescription
@@ -18,13 +18,13 @@ let package = Package(
     targets: [
         .binaryTarget(
             name: "Gingham",
-            url: "https://github.com/digitalglobeby/Gingham/releases/download/1.0.1/Gingham.xcframework.zip",
-            checksum: "3965d1d9539649e1a2f09e123208780ac09e1c55f2fb3d6c4304ef76b7f67967"
+            url: "https://github.com/digitalglobeby/Gingham/releases/download/1.0.2/Gingham.xcframework.zip",
+            checksum: "a705d8622f2b5537fb29c9f68269e53b741120c9b4441d70f170cc065785214d"
         ),
         .binaryTarget(
             name: "GinghamICU",
-            url: "https://github.com/digitalglobeby/Gingham/releases/download/1.0.1/GinghamICU.xcframework.zip",
-            checksum: "98a1462804bd785ce320fef4d432efb61fbc281ab14a13623a08b232cde92505"
+            url: "https://github.com/digitalglobeby/Gingham/releases/download/1.0.2/GinghamICU.xcframework.zip",
+            checksum: "317009d4d7ff7e9ac0cde6aa04ba05f48653e64cbb82aa44bb3cfdb7335ff1fc"
         ),
     ]
 )
