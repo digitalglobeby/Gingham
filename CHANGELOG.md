@@ -3,6 +3,19 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.1.0
+
+- **Text for cells without a value**: a column's `emptyText` (or
+  `showingEmptyCells(as:)`) shows dimmed text, such as `NULL`, in its cells
+  without a value. Copies, exports and searches still see an empty cell;
+  VoiceOver reads the text.
+- **Fixed**: on the iPad and iPhone, an empty table's text wraps instead of
+  being cut to its first line.
+- **Fixed**: a cell that shows its column's empty text flashes when it gets
+  a value, as an empty cell does.
+- **Fixed**: in the iOS simulator, a resized header (an iPad rotated, the
+  sidebar shown) is drawn again instead of keeping its older frame.
+
 ## 1.0.2
 
 - **Conditional formats on numbers shown as text**: data bars, color scales
