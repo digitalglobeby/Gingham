@@ -184,7 +184,7 @@ architecture, see the note above). Apps without it don't build its ICU.
 Gingham follows semantic versioning, with one rule for enums: a minor
 version may add cases to the public enums that describe values, formats,
 filters and summaries (`GHValueFormat`, `GHColumnFilter`, `GHCellValue`,
-`GHAggregate` and the like), as 1.1 added the `.dates`, `.top` and
+`GHAggregate` and the like), as NGTable 1.1 added the `.dates`, `.top` and
 `.bottom` filters. Keep a `default` in a `switch` over
 them, and updates won't stop your code from compiling. Only `GHColumnItem`,
 `GHDataColumnItem`, `GHColumnPin` and `GHColumnVisibility.State` keep their
