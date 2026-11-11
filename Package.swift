@@ -26,5 +26,8 @@ let package = Package(
             url: "https://github.com/digitalglobeby/Gingham/releases/download/1.1.0/GinghamICU.xcframework.zip",
             checksum: "16e8ebf0fcec8182bb7a7b03c35633907862ea17c78536caf4e5198a717d1359"
         ),
+        // What `swift build` of this package builds (binary targets alone give
+        // it nothing to build): code that imports both frameworks. In no product.
+        .target(name: "GinghamBuildCheck", dependencies: ["Gingham", "GinghamICU"]),
     ]
 )
