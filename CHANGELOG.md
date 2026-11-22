@@ -3,6 +3,11 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.1.1
+
+- **Fixed**: apps on Xcode 26.0–26.3 (Swift 6.2) build with the frameworks;
+  with 1.0.0–1.1.0 they didn't compile.
+
 ## 1.1.0
 
 - **Text for cells without a value**: a column's `emptyText` (or

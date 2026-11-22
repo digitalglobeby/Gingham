@@ -160,6 +160,9 @@ GHDataTable(campaigns, selection: $selection) {
 - iOS and iPadOS 17 or later (the table view in UIKit, on the iPad and the
   iPhone)
 - Swift 6.2 or later (Xcode 26 or later)
+- On the iOS simulator, the frameworks are arm64 only (Apple silicon): builds
+  for Any iOS Simulator Device need x86_64 excluded
+  (`EXCLUDED_ARCHS[sdk=iphonesimulator*] = x86_64`)
 
 ## Installation
 
