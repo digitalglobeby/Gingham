@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+contact_links:
+  # GitHub shows only http(s) links here (a mailto: link is left out), so the
+  # address is in the text and the link opens the licensing terms.
+  - name: License keys and licensing questions
+    url: https://github.com/digitalglobeby/Gingham/blob/main/LICENSING.md
+    about: "By email, not in issues: d.polikhranidi+gingham@gmail.com. Buying a key, a 30-day trial key, a free key for an open-source app."
+  - name: Documentation
+    url: https://digitalglobeby.github.io/Gingham/documentation/gingham
+    about: Guides and the API reference.

@@ -1,0 +1,38 @@
+name: Feature request
+description: Something your app needs from the table that it can't do yet.
+labels: ["enhancement"]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: What your app needs to do
+      description: The task and who it's for, rather than a particular API.
+    validations:
+      required: true
+  - type: textarea
+    id: today
+    attributes:
+      label: How you do it today
+      description: A workaround, another component, or NSTableView, UITableView or SwiftUI's Table code that does it.
+  - type: textarea
+    id: proposal
+    attributes:
+      label: How it could look
+      description: An API, a behavior or a picture, if you have one in mind.
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Platforms
+      multiple: true
+      options:
+        - macOS
+        - iPadOS
+        - iOS
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Gingham version
+      description: "`GHTableView.version`, if you use it already."
+      placeholder: "1.1.0"

@@ -1,0 +1,17 @@
+name: Question
+description: How to do something with Gingham, when the documentation doesn't say.
+labels: ["question"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What you're trying to do, and what you tried.
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Gingham version
+      description: "`GHTableView.version`, if you use it already."
+      placeholder: "1.1.0"

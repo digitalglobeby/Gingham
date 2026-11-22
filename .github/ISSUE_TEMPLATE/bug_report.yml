@@ -1,0 +1,70 @@
+name: Bug report
+description: Something doesn't work as the documentation says, crashes or draws wrong.
+labels: ["bug"]
+body:
+  - type: input
+    id: version
+    attributes:
+      label: Gingham version
+      description: "`GHTableView.version`, or the version in your Package.resolved."
+      placeholder: "1.1.0"
+    validations:
+      required: true
+  - type: input
+    id: xcode
+    attributes:
+      label: Xcode version
+      description: Xcode › About Xcode, and the Swift version if you know it.
+      placeholder: "Xcode 26.1 (Swift 6.2.1)"
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: macOS or iOS/iPadOS version
+      placeholder: "macOS 26.1, iPadOS 26.1"
+    validations:
+      required: true
+  - type: input
+    id: device
+    attributes:
+      label: Mac or device model
+      placeholder: "MacBook Pro (M1 Max), iPad Pro 11-inch (M4)"
+    validations:
+      required: true
+  - type: input
+    id: rows
+    attributes:
+      label: Number of rows
+      description: Rows in the table when it happens, and columns if there are many.
+      placeholder: "250,000 rows, 30 columns"
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+        2.
+        3.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What happened instead. Screenshots, a video or a crash log help.
+    validations:
+      required: true
+  - type: textarea
+    id: sample
+    attributes:
+      label: Sample code or project
+      description: >-
+        The smallest code that shows it (the table's setup, data source and
+        delegate), or a link to a project.
