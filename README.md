@@ -11,72 +11,176 @@
   <img src="https://img.shields.io/badge/license-free%20up%20to%2010%2C000%20rows-lightgrey" alt="License: free up to 10,000 rows">
 </p>
 
-A fast table for business data on the Mac, iPad and iPhone: frozen columns, column
-groups, a summary row with formulas, row grouping with subtotals, search and
-filters, live updates, and a selection that stays on the same records across
-reloads. The GPU draws it, and its API mirrors `NSTableView`, so apps migrate
-without reworking their patterns. One `GHTableView` class works in AppKit and
-in UIKit, with the same data source, delegate and features; on the iPad and
-iPhone it takes touches, the pointer, a hardware keyboard and VoiceOver as the iPad's
-own controls do.
+**On a MacBook Pro (M1 Max, 120 Hz), Gingham presents 119 frames a second of
+a million live rows taking 300,000 row changes a second** (107 counted from
+the screen) in a 2040 × 1080-point table; the fastest NSTableView we could
+write updates at most 40 times a second, a typical one 4.
 
-> [!NOTE]
-> **Free for any use, commercial too, with up to 10,000 rows a table.** A
-> table with more shows the first 10,000; a **license key** shows them all:
-> write to **d.polikhranidi+gingham@gmail.com**. See [Licensing](LICENSING.md).
+<!-- The new video goes here, on a line of its own: upload gingham-comparison-2026-11-23.mp4 (26 s: Gingham, NSTableView, NSTableView cell-based, SwiftUI Table) in GitHub's web editor and paste its URL. -->
 
-## Why Gingham
+![Gingham, NSTableView, NSTableView in its cell-based mode and SwiftUI Table showing the same live trades](Assets/comparison.png)
 
-![Gingham, NSTableView, NSCollectionView and SwiftUI Table showing the same live trades](Assets/comparison.png)
+Live trades in Gingham, in NSTableView as apps typically write it, in
+NSTableView's cell-based mode tuned by hand (the fastest AppKit table we
+measured) and in SwiftUI's Table: 20,000 rows sorted by amount, about 44,800
+row changes a second, in the bench's default window. Four moments of four
+runs, recorded on the screen: the numbers in the windows were measured live
+meanwhile and differ from the quiet runs' (Gingham's main thread read 25%
+busy there, 48% in the quiet runs); the tables below are the quiet runs'
+medians.
 
-https://github.com/user-attachments/assets/f02edc07-b9fa-4bcf-b77e-f1ab2ebf632e
+## Benchmarks
 
-20,000 live trades sorted by amount, 45,000 changes a second, in each table in
-turn (a Release build on Apple silicon, 120 Hz screen). Gingham sorts the rows
-itself and moves only the changed ones; NSTableView, NSCollectionView and
-SwiftUI's Table leave sorting to the app, which sorts again after each change.
+The same live data in Gingham and in Apple's tables, measured the same way
+for each by an open benchmark, [Gingham Bench](https://github.com/digitalglobeby/gingham-bench)
+(MIT): the code of every table, the data and [how it's measured](https://github.com/digitalglobeby/gingham-bench#how-its-measured).
+Gingham is used through its public API (a data source, `sortsRows`, targeted
+reloads). Its competitors on the Mac:
 
-More scenarios, measured the same way. Main thread: the share of time it was
-busy (less is more room for your app). Frames: screen updates a second.
+- **NSTableView** as apps typically write it: view-based, and the app sorts
+  all the rows again after each batch of changes and reloads the rows in
+  view.
+- **NSTableView, tuned** as an AppKit expert would: changed cells updated in
+  place, an incremental sort.
+- **NSTableView, cell-based**: its older cell-based mode, tuned the same way.
+- **NSCollectionView**, tuned the same way.
+- **SwiftUI Table**, as documented and tuned.
 
-| Scenario | Gingham | NSTableView | SwiftUI Table |
+If you can make one of them faster, open a pull request there: it will be
+measured.
+
+### Mac: live data, the default window (1000 × 640 points of table)
+
+Screen updates a second (the table's pixels, captured from outside every
+table) · main thread busy (less leaves more room for your app).
+
+| Table | Live trades: 20,000 rows, ~44,800 changes/s | Order book: 200,000 rows, ~243,500 changes/s | Trade feed: 1,000,000 rows, ~300,000 changes/s |
 | --- | --- | --- | --- |
-| Live trades sorted by amount: 20,000 rows, 45,000 changes a second | 23–26% · 120 frames | 86–87% · 30–31 frames | 99% · 3 frames |
-| Order book: 200,000 rows, 244,000 changes a second | 51% · 120 frames | 97% · 28 frames | doesn't load the rows |
-| Trade feed: 1,000,000 rows, 300,000 changes a second | 36–43% · 120 frames | 97% · 15 frames | doesn't load the rows |
-| Binance live tickers: 3,100 pairs | 58% · 120 frames | 100% · 4 frames | 99% · 18 frames |
-| Binance order books: 58,000 levels | 17% · 118 frames | 99% · 7 frames | 100% · 0 frames |
-| Sorting 1,000,000 rows by a text column | 0.15–0.26 s, the screen keeps drawing | 1.9 s, the app stops for it | — |
+| **Gingham** | **73** · 48% | **111** · 55% | **110** · 37% |
+| NSTableView | 42 · 96% | 19 · 99% | 10 · 99% |
+| NSTableView, tuned | — ¹ · 65% | 52 · 98% | 42 · 98% |
+| NSTableView, cell-based | 58 · 48% | 94 · 84% | 96 · 83% |
+| NSCollectionView | 52 · 65% | 52 · 98% | 42 · 98% |
+| SwiftUI Table | 0 · 100% | stuck ² | stuck ² |
+| SwiftUI Table, tuned | 4 · 100% | stuck ² | stuck ² |
 
-Gingham also sorts, filters, sums and highlights changes while doing it.
-NSCollectionView, measured the same way, gets 34–57 frames with the main
-thread 72–75% busy on the live trades.
+In this window the cell-based NSTableView comes closest: 58, 94 and 96
+screen updates a second to Gingham's 73, 111 and 110, with its main thread
+48–84% busy to Gingham's 37–55%. The screen capture tops out near 110 frames
+a second (on the order book it counted 110.6 of the 119.4 frames Gingham
+presented; a system trace confirmed Gingham's presented frames). Live trades
+are sorted by amount, and not every batch of changes reaches the rows in
+view, so no table can show 120 updates a second there; Gingham and the
+cell-based NSTableView applied new changes at nearly every refresh (118 and
+119 times a second).
 
-With tens of millions of rows the app gives the table a column source
-(`GHColumnSource`). On a MacBook Pro M1 Max, the huge-CSV viewer Rowbolt's
-1 GB file of 11.9 million rows sorts by text in 0.52–0.54 s and by a number
-in 0.27 s, is searched in 0.05–0.06 s (on all cores)
-and scrolls at 120 frames a second. An iPhone 15 Pro Max sorts a 5 GB file
-of 59 million rows by name in 5.9–6.3 s and by amount in 4.8–5.6 s, and
-searches it in 2.9 s.
+¹ The screen run was invalid (the window was covered); its measured runs
+applied 101 updates a second, and its traced run read 50 screen updates a
+second. ² The main thread didn't come back within 15 s after the measured
+window.
 
-On the iPad, the bench in [`Demos/iPadBench`](Demos/iPadBench) shows the
-same live rows in Gingham, UITableView, UICollectionView and SwiftUI's Table
-and List, and scrolls each down and up as fast as a flick for eight seconds.
-In the simulator (a Release build, 100,000 rows, 1,000 changes a second):
+### Mac: live data, a large window (2040 × 1080 points of table)
 
-| Scrolling, values changing | Gingham | SwiftUI Table | SwiftUI List | UICollectionView | UITableView |
-| --- | --- | --- | --- | --- | --- |
-| Frames a second (the worst second) | 60 (60) | 53 (37) | 52 (40) | 38 (14) | 25 (3) |
-| Longest frame | 18 ms | 83 ms | 83 ms | 217 ms | 496 ms |
+The frames Gingham presented (exact: Gingham reports each one) or, for the
+others, the updates applied a second (the most they can have shown), with
+the screen updates counted from the screen in parentheses (the capture tops
+out near 110) · main thread busy.
 
-With a million rows and 10,000 changes a second Gingham still gets 60
-frames (59 in the worst second). The simulator has the Mac's keyboard
-attached, and with a keyboard iPadOS's focus system slows UIKit's tables
-while they scroll; measure on your device too (the bench's launch arguments
-run the test by themselves).
+| Table | Live trades | Order book | Trade feed |
+| --- | --- | --- | --- |
+| **Gingham** | **120** (92) · 38% | **120** (108) · 35% | **119** (107) · 73% |
+| NSTableView | 27 (26) · 96% | 10 (9) · 99% | 4 (4) · 99% |
+| NSTableView, tuned | 47 (39) · 93% | 31 (30) · 97% | 14 (14) · 96% |
+| NSTableView, cell-based | 114 (68) · 75% | 76 (71) · 97% | 40 (40) · 96% |
+| NSCollectionView | 48 (41) · 93% | 32 (30) · 97% | 15 (14) · 98% |
+| SwiftUI Table | stuck ² | stuck ² | stuck ² |
+| SwiftUI Table, tuned | 2 (2) · 100% | stuck ² | 0 (0) · 100% |
+
+With more cells in view, Apple's tables fall further behind. Gingham's main
+thread is busier on the trade feed at this size (73%, against 37% in the
+default window), and it still presents a frame at nearly every refresh.
+
+On [Binance's live tickers](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-23-1146.md#binance-tickers)
+(about 3,100 pairs, a live market, so the numbers vary), the cell-based
+NSTableView and NSCollectionView show slightly more screen updates than
+Gingham (43 and 44 a second to its 39), and Gingham's main thread is the
+least busy (19%, to their 36–43%; the typical NSTableView's and SwiftUI
+Table's 94%).
+
+### Mac: sorting 1,000,000 rows by a text column
+
+A header click on a table of 1,000,000 rows, sorted in Finder's order
+(`localizedStandardCompare`): time until the sorted order is on the screen ·
+the longest the screen waited meanwhile.
+
+| Table | By pair: about 500 distinct texts | By account: nearly every row a different text |
+| --- | --- | --- |
+| **Gingham** | 0.15 s · 16 ms | **0.18 s** · 14 ms |
+| NSTableView | 5.18 s · 5,183 ms | 7.99 s · 7,993 ms |
+| NSTableView, tuned | 0.16 s · 77 ms | 7.85 s · 79 ms |
+| NSTableView, cell-based | **0.09 s** · 8 ms | 7.83 s · 17 ms |
+| NSCollectionView | 0.11 s · 8 ms | 7.81 s · 35 ms |
+| SwiftUI Table | not sorted within 60 s | not sorted within 60 s |
+| SwiftUI Table, tuned | 0.92 s · 797 ms | 13.29 s · 890 ms |
+
+The tuned AppKit tables compare each distinct text once and sort in the
+background. With 500 texts that's quick, and the cell-based NSTableView sorts
+by pair faster than Gingham (0.09 s to 0.15 s); with nearly a million it
+takes them about 8 seconds, Gingham 0.18 s. The typical NSTableView sorts on
+the main thread, and the app stops meanwhile.
+
+### iPhone: scrolling while values change
+
+UITableView and UICollectionView as typically written (changed rows
+reconfigured, as Apple recommends) and tuned (changed values set on the cells
+in view), and SwiftUI's List, with 100,000 rows and 1,000 changes a second.
+What the render server showed: XCUITest's real flicks (UIKit's own scroll
+metric, the median of five flicks) and Instruments' Animation Hitches during
+the app's scroll tests (one run of each table's three tests).
+
+| Table | Real flicks: frames a second · hitches | Animation Hitches: hitch time a second |
+| --- | --- | --- |
+| **Gingham** | 117.6 · 0 | 1.6–8.3 ms |
+| UITableView | 111.1 · 294 (72.5 ms a second) | 503–507 ms |
+| UITableView, tuned | 119.0 · 0 | 1.0–3.6 ms |
+| UICollectionView | 116.0 · 0 | 0–2.1 ms |
+| UICollectionView, tuned | 118.7 · 0 | 0–9.9 ms |
+| SwiftUI List | 117.3 · 0 | 3.1–5.2 ms |
+
+The app's own meter (its main thread's frame callbacks, which don't see the
+render server's work), scrolling a flick a second, four down and four up,
+while values change (the bench's `flicks` test, median of 3 runs): frames a
+second · main thread busy.
+
+| Table | 100,000 rows, 1,000 changes/s | 1,000,000 rows, 10,000 changes/s |
+| --- | --- | --- |
+| **Gingham** | 120 · **20%** | 120 · **31%** |
+| UITableView | 62.4 · 82% | 6.3 · 98% |
+| UITableView, tuned | 120 · 36% | 120 · 40% |
+| UICollectionView | 120 · 43% | 120 · 40% |
+| UICollectionView, tuned | 120 · 40% | 120 · 41% |
+| SwiftUI List | 119.7 · 40% | 120 · 48% |
+
+On the iPhone, well-written UIKit tables and SwiftUI's List keep up too;
+Gingham does it with its main thread less busy (20% and 31% to their
+36–48%), and the typical UITableView falls behind, to 6 frames a second with
+a million rows on the app's meter. SwiftUI's Table shows only its first
+column on the iPhone and isn't compared there.
+
+Measured on 2026-11-23 on a MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, its
+built-in 120 Hz display, and an iPhone 15 Pro Max, iOS 27.2.1; Gingham 1.1.1,
+Release builds, medians of 3 runs. Every column of every run, with the lowest
+and highest, is in the bench's [results](https://github.com/digitalglobeby/gingham-bench/tree/main/results);
+how each table is set up and measured, in its [README](https://github.com/digitalglobeby/gingham-bench#how-its-measured).
 
 ## Features
+
+A table view for business data on the Mac, iPad and iPhone, drawn by the
+GPU, with an API that mirrors `NSTableView`, so apps migrate without
+reworking their patterns. One `GHTableView` class works in AppKit and in
+UIKit, with the same data source, delegate and features; on the iPad and
+iPhone it takes touches, the pointer, a hardware keyboard and VoiceOver as
+the system's own controls do.
 
 - **Frozen columns** at the leading and trailing edges, and **column groups**
   under a common header.
@@ -91,8 +195,17 @@ run the test by themselves).
   or refreshed.
 - **Live data**: targeted updates (`reloadData(forRowIndexes:columnIndexes:)`,
   inserts, removes, moves, batched with `beginUpdates()`/`endUpdates()`) cost
-  what changed, also with 200,000 rows; `reorderRows(from:to:)` re-sorts
-  without reading the rows again.
+  what changed; the table keeps the rows sorted itself as values change
+  (`sortsRows`), or `reorderRows(from:to:)` re-sorts without reading the rows
+  again.
+- **Tens of millions of rows** through a column source (`GHColumnSource`):
+  the table's sort, search and totals read your data on all cores, off the
+  main thread, and keep no values.
+- **Text sorts like Finder**, in `localizedStandardCompare`'s order, a million
+  texts in about 0.2 seconds in the background, for every European language,
+  Cyrillic, Greek, Hebrew, Arabic, Devanagari, kana, Han and Hangul; the
+  optional [GinghamICU](GinghamICU.md) library adds ICU's collation for Thai
+  and for Chinese texts with many readings.
 - **NSTableView's patterns**: the same data source, delegate, sort
   descriptor and notification names, a diffable data source like
   `NSTableViewDiffableDataSource`, and an adapter for an existing
@@ -114,34 +227,10 @@ run the test by themselves).
   resized and moved by a finger, filters and choices in popovers, drag and
   drop, export to the share sheet, the pointer's hover, a hardware keyboard,
   VoiceOver's data table, and the summary row above the home indicator.
-- Fast with a million rows and hundreds of thousands of changes a second:
-  the GPU draws the rows, and a frame is drawn only when something visible
-  changed.
-- **Tens of millions of rows** through a column source (`GHColumnSource`):
-  the table's sort, search and totals read your data on all cores, off the
-  main thread, and keep no values.
 
 Your app owns the data. The table sorts the rows itself (`sortsRows`, in the
 background for large tables) or leaves sorting to your app like
 `NSTableView`, and your app performs the actions of its buttons and menus.
-
-> [!NOTE]
-> **Text sorts like Finder, without ICU.** Gingham makes its own collation
-> keys (`GHTextKeys`, the default) for every European language, Cyrillic,
-> Greek, Hebrew, Arabic, Devanagari, kana, Han and Hangul, learned from
-> Foundation's order for the user's language: a million texts sort in about
-> 0.2 seconds on all cores, in the background, in exactly the order of
-> `localizedStandardCompare` (the pairs whose keys might not tell are
-> compared). The optional [GinghamICU](GinghamICU.md) library adds ICU's keys
-> (about 9 MB per architecture) for Thai (Gingham compares its texts), or
-> texts where its keys leave many pairs to compare (Chinese readings):
->
-> ```swift
-> import GinghamICU
-> GHTableView.defaultCollationKeyProvider = GHBundledICUCollation()
-> ```
->
-> See "Sorting a million rows" in the documentation.
 
 In SwiftUI on the Mac, `GHDataTable` works like `Table` (on the iPad it
 comes next; until then wrap `GHTableView` in a `UIViewRepresentable`):
@@ -155,8 +244,8 @@ GHDataTable(campaigns, selection: $selection) {
 
 ## Requirements
 
-- A Mac with Apple silicon, macOS 14 or later (Liquid Glass on macOS 26 and
-  later). Intel Macs aren't supported (the frameworks are arm64)
+- A Mac with macOS 14 or later, Apple silicon only, like macOS 27 (the
+  frameworks are arm64); Liquid Glass on macOS 26 and later
 - iOS and iPadOS 17 or later (the table view in UIKit, on the iPad and the
   iPhone)
 - Swift 6.2 or later (Xcode 26 or later)
@@ -171,7 +260,7 @@ URL, and add the `Gingham` library to your app target. In a `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.0.0"),
+    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.1.1"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["Gingham"]),
@@ -180,7 +269,7 @@ targets: [
 
 For ICU's collation keys (Thai, Chinese text with many words read otherwise,
 or ICU's own order), also add the optional `GinghamICU` library, `.product(name: "GinghamICU", package: "Gingham")` (about 9 MB per
-architecture, see the note above). Apps without it don't build its ICU.
+architecture, see [GinghamICU](GinghamICU.md)). Apps without it don't build its ICU.
 
 ### Versions
 
@@ -290,6 +379,20 @@ does with the mouse the iPad does by touch:
 6. Don't put the table in an `NSScrollView` or a `UIScrollView`: it scrolls
    by itself.
 
+## License
+
+Gingham is free for any use, commercial too, with up to 10,000 rows a table
+(a table with more shows the first 10,000 and a notice). A license key shows
+every row: it's per developer and covers a major version (all of 1.x), and
+apps shipped with it stay licensed. Register it at launch with
+`GHLicense.register(_:)`.
+
+- [Buy a license key](mailto:d.polikhranidi+gingham@gmail.com?subject=Gingham%20license%20key)
+- [Get a 30-day trial key](mailto:d.polikhranidi+gingham@gmail.com?subject=Gingham%20trial%20key)
+
+See [LICENSING.md](LICENSING.md) and [LICENSE](LICENSE);
+`GHTableView.version` tells which version you have.
+
 ## Documentation
 
 The package has full DocC documentation: API reference for every public type
@@ -312,21 +415,12 @@ same, and the table above maps the interactions):
 | Appearance | Sizes, row tints and markers, selection style, scrolling |
 | Keyboard and Accessibility | Keyboard commands, type select, VoiceOver |
 | Performance and Threading | What the table reads and when, large data, tens of millions of rows, live updates, memory |
+| Benchmarks | Gingham against Apple's tables on the Mac and the iPhone: what was measured, the results, the open bench |
 | Using Gingham in SwiftUI | `GHDataTable`: columns, selection, sorting, editing, menus (the Mac's) |
 | Release Notes | What each version brought |
 
 Read it at **https://digitalglobeby.github.io/Gingham/documentation/gingham**.
 Symbol documentation also shows in Xcode's Quick Help (Option-click a symbol).
-
-## License
-
-Gingham is free for any use, commercial too, with up to 10,000 rows a table
-(a table with more shows the first 10,000 and a notice). A license key shows
-every row: it's per developer and covers a major version (all of 1.x), and
-apps shipped with it stay licensed. Register it at launch with
-`GHLicense.register(_:)`. To get one, write to
-**d.polikhranidi+gingham@gmail.com**. See [LICENSING.md](LICENSING.md) and
-[LICENSE](LICENSE); `GHTableView.version` tells which version you have.
 
 ## Support
 
