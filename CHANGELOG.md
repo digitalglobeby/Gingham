@@ -3,6 +3,13 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.1.4
+
+- **Less GPU time for large tables**: large tables take about a fifth less
+  GPU time to draw, and their frames look the same. An order book of
+  3840 × 2160 points: 371–378 ms of GPU time a second, now 283–294 ms
+  (MacBook Pro M1 Max, Release).
+
 ## 1.1.3
 
 - **Sorting again is almost instant for values that hardly repeat too**:
