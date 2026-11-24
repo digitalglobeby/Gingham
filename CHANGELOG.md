@@ -3,6 +3,14 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.1.3
+
+- **Sorting again is almost instant for values that hardly repeat too**:
+  sorting a column of names or accounts again, after a sort by another
+  column, takes almost no time. A million rows: 0.12–0.13 s, now 0.02 s
+  (MacBook Pro M1 Max, Release). When the language changes, the column is
+  sorted from its values again.
+
 ## 1.1.2
 
 - **Faster sorts of values that repeat**: sorting a column whose values
