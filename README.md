@@ -11,23 +11,23 @@
   <img src="https://img.shields.io/badge/license-free%20up%20to%2010%2C000%20rows-lightgrey" alt="License: free up to 10,000 rows">
 </p>
 
-**On a MacBook Pro (M1 Max, 120 Hz), Gingham presents 119 frames a second of
-a million live rows taking 300,000 row changes a second** (107 counted from
-the screen) in a 2040 × 1080-point table; the fastest NSTableView we could
-write updates at most 40 times a second, a typical one 4.
+**On a MacBook Pro (M1 Max, 120 Hz), Gingham shows a live order book of
+200,000 rows with about 243,500 row changes a second at 120 frames a second,
+its main thread 33% busy**; in the same 2040 × 1080-point table, the fastest
+NSTableView we could write updates 76 times a second and a typical one 10,
+their main threads 97% and 99% busy.
 
-<!-- The new video goes here, on a line of its own: upload gingham-comparison-2026-11-23.mp4 (26 s: Gingham, NSTableView, NSTableView cell-based, SwiftUI Table) in GitHub's web editor and paste its URL. -->
+<!-- The new video goes here, on a line of its own: upload gingham-comparison-2026-11-24.mp4 (24 s, the order book at 2040 × 1080: Gingham, NSTableView, NSTableView cell-based, SwiftUI Table, each window cut like the picture below) in GitHub's web editor and paste its URL. -->
 
-![Gingham, NSTableView, NSTableView in its cell-based mode and SwiftUI Table showing the same live trades](Assets/comparison.png)
+![Gingham, NSTableView, NSTableView in its cell-based mode and SwiftUI Table showing the same live order book](Assets/comparison.png)
 
-Live trades in Gingham, in NSTableView as apps typically write it, in
+The order book in Gingham, in NSTableView as apps typically write it, in
 NSTableView's cell-based mode tuned by hand (the fastest AppKit table we
-measured) and in SwiftUI's Table: 20,000 rows sorted by amount, about 44,800
-row changes a second, in the bench's default window. Four moments of four
-runs, recorded on the screen: the numbers in the windows were measured live
-meanwhile and differ from the quiet runs' (Gingham's main thread read 25%
-busy there, 48% in the quiet runs); the tables below are the quiet runs'
-medians.
+measured) and in SwiftUI's Table: 200,000 rows, about 243,500 row changes a
+second, in a 2040 × 1080-point window. Four moments of a recording, each
+window cut to the table's columns, its live numbers moved next to them and
+its gray text lightened: the numbers were measured live meanwhile; the
+tables below are the medians of quiet runs.
 
 ## Benchmarks
 
@@ -46,106 +46,169 @@ reloads). Its competitors on the Mac:
 - **NSCollectionView**, tuned the same way.
 - **SwiftUI Table**, as documented and tuned.
 
-If you can make one of them faster, open a pull request there: it will be
-measured.
+The scenarios: **live trades** (20,000 rows sorted by amount, about 44,800
+row changes a second), **wide live trades** (the same with 24 columns, 13 of
+them in view in the default window), an **order book** (200,000 rows, about
+243,500 row changes a second with rows added and removed) and a **trade
+feed** (1,000,000 rows, about 300,000 row changes a second). If you can make
+a competitor faster, open a pull request there: it will be measured.
 
-### Mac: live data, the default window (1000 × 640 points of table)
+### Mac: the default window (1000 × 640 points)
 
-Screen updates a second (the table's pixels, captured from outside every
-table) · main thread busy (less leaves more room for your app).
+Frames with new data a second (max 120) · main thread busy (less leaves more
+room for your app).
 
-| Table | Live trades: 20,000 rows, ~44,800 changes/s | Order book: 200,000 rows, ~243,500 changes/s | Trade feed: 1,000,000 rows, ~300,000 changes/s |
-| --- | --- | --- | --- |
-| **Gingham** | **73** · 48% | **111** · 55% | **110** · 37% |
-| NSTableView | 42 · 96% | 19 · 99% | 10 · 99% |
-| NSTableView, tuned | — ¹ · 65% | 52 · 98% | 42 · 98% |
-| NSTableView, cell-based | 58 · 48% | 94 · 84% | 96 · 83% |
-| NSCollectionView | 52 · 65% | 52 · 98% | 42 · 98% |
-| SwiftUI Table | 0 · 100% | stuck ² | stuck ² |
-| SwiftUI Table, tuned | 4 · 100% | stuck ² | stuck ² |
+| Table | Live trades | Wide live trades | Order book | Trade feed |
+| --- | --- | --- | --- | --- |
+| **Gingham** | **73** · 35% | **74** · 39% | **108** · 35% | **108** · 27% |
+| NSTableView | 42 · 96% | 21 · 96% | 19 · 99% | 10 · 99% |
+| NSTableView, tuned | 50 · 68% | 34 · 90% | 51 · 98% | 40 · 98% |
+| NSTableView, cell-based | 62 · 40% | 56 · 50% | 82 · 91% | 92 · 86% |
+| NSCollectionView | 50 · 68% | 33 · 91% | 51 · 98% | 41 · 98% |
+| SwiftUI Table | 1 · 100% (1 of 3 runs stuck) | 0 · 100% | stuck | stuck |
+| SwiftUI Table, tuned | 4 · 100% | 1 · 100% | stuck | 0 · 100% |
 
-In this window the cell-based NSTableView comes closest: 58, 94 and 96
-screen updates a second to Gingham's 73, 111 and 110, with its main thread
-48–84% busy to Gingham's 37–55%. The screen capture tops out near 110 frames
-a second (on the order book it counted 110.6 of the 119.4 frames Gingham
-presented; a system trace confirmed Gingham's presented frames). Live trades
-are sorted by amount, and not every batch of changes reaches the rows in
-view, so no table can show 120 updates a second there; Gingham and the
-cell-based NSTableView applied new changes at nearly every refresh (118 and
-119 times a second).
-
-¹ The screen run was invalid (the window was covered); its measured runs
-applied 101 updates a second, and its traced run read 50 screen updates a
-second. ² The main thread didn't come back within 15 s after the measured
+Frames with new data: how many times a second the table's picture actually
+changed; like frames a second, but a frozen table scores 0. The screen
+capture counts up to about 110 a second; Gingham presented 120 frames a
+second in all four. Live trades are sorted by amount, and not every batch
+of changes reaches the rows in view, so no table gets near 120 there;
+Gingham and the cell-based NSTableView applied new changes at every refresh.
+"Stuck": the main thread didn't come back within 15 s after the measured
 window.
 
-### Mac: live data, a large window (2040 × 1080 points of table)
+MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, built-in display at 120 Hz
+(2056 × 1329 points at 2×), Gingham 1.1.3, Release builds, medians of 3
+runs, 2026-11-24 ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-0906.md)).
 
-The frames Gingham presented (exact: Gingham reports each one) or, for the
-others, the updates applied a second (the most they can have shown), with
-the screen updates counted from the screen in parentheses (the capture tops
-out near 110) · main thread busy.
+### Mac: a large window (2040 × 1080 points)
 
-| Table | Live trades | Order book | Trade feed |
-| --- | --- | --- | --- |
-| **Gingham** | **120** (92) · 38% | **120** (108) · 35% | **119** (107) · 73% |
-| NSTableView | 27 (26) · 96% | 10 (9) · 99% | 4 (4) · 99% |
-| NSTableView, tuned | 47 (39) · 93% | 31 (30) · 97% | 14 (14) · 96% |
-| NSTableView, cell-based | 114 (68) · 75% | 76 (71) · 97% | 40 (40) · 96% |
-| NSCollectionView | 48 (41) · 93% | 32 (30) · 97% | 15 (14) · 98% |
-| SwiftUI Table | stuck ² | stuck ² | stuck ² |
-| SwiftUI Table, tuned | 2 (2) · 100% | stuck ² | 0 (0) · 100% |
+Frames presented a second by Gingham, updates applied a second by the others
+(max 120) · main thread busy.
 
-With more cells in view, Apple's tables fall further behind. Gingham's main
-thread is busier on the trade feed at this size (73%, against 37% in the
-default window), and it still presents a frame at nearly every refresh.
+| Table | Live trades | Wide live trades | Order book | Trade feed |
+| --- | --- | --- | --- | --- |
+| **Gingham** | **120** · 38% | **120** · 39% | **120** · 33% | **120** · 43% |
+| NSTableView | 27 · 96% | 10 · 98% | 10 · 99% | 4 · 100% |
+| NSTableView, tuned | 49 · 93% | 13 · 97% | 31 · 97% | 15 · 98% |
+| NSTableView, cell-based | 113 · 77% | 43 · 97% | 76 · 97% | 40 · 95% |
+| NSCollectionView | 49 · 93% | 13 · 97% | 32 · 97% | 14 · 97% |
+| SwiftUI Table | stuck | stuck | stuck | stuck |
+| SwiftUI Table, tuned | 2 · 100% | 1 · 100% | stuck | 0 · 100% |
 
-On [Binance's live tickers](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-23-1146.md#binance-tickers)
-(about 3,100 pairs, a live market, so the numbers vary), the cell-based
-NSTableView and NSCollectionView show slightly more screen updates than
-Gingham (43 and 44 a second to its 39), and Gingham's main thread is the
-least busy (19%, to their 36–43%; the typical NSTableView's and SwiftUI
-Table's 94%).
+As above, the screen capture can't count above about 110 a second, so the
+table gives the frames Gingham reports reaching the screen and, for the
+others, the times a second they were given new data to show (the most they
+can have shown).
+
+MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, built-in display at 120 Hz
+(2056 × 1329 points at 2×), Gingham 1.1.3, Release builds, medians of 3
+runs, 2026-11-24 ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1037.md)).
+
+### Mac: a 4K table at 120 Hz (3840 × 2160 points)
+
+A table larger than the MacBook's screen (2056 × 1290 points of the window
+on it), what a 4K display at 120 Hz would show. Frames presented a second by
+Gingham, updates applied a second by the others (max 120) · main thread busy.
+
+| Table | Live trades | Wide live trades | Order book | Trade feed |
+| --- | --- | --- | --- | --- |
+| **Gingham** | **120** · 26% | **116–120** · 50–68% | **115–120** · 44–67% | **120** · 79% |
+| NSTableView | 14 · 97% | 5 · 99% | 4 · 100% | 2 · 100% |
+| NSTableView, tuned | 19 · 97% | 6 · 99% | 16 · 96% | 7 · 99% |
+| NSTableView, cell-based | 40 · 98% | 17 · 99% | 37 · 99% | 20 · 99% |
+| NSCollectionView | 19 · 97% | 6 · 99% | 16 · 96% | 7 · 99% |
+| SwiftUI Table | stuck | stuck | stuck | stuck |
+| SwiftUI Table, tuned | 1 · 100% | 0 · 100% | stuck | 0 · 100% |
+
+Here Gingham is at its limit: for wide live trades and the order book the
+table gives the range of two sessions measured the same way (the
+[second](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1215.md)
+got 120 frames on both, at 50% and 44%).
+
+MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, built-in display at 120 Hz
+(2056 × 1329 points at 2×), Gingham 1.1.3, Release builds, medians of 3
+runs, 2026-11-24 ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1456.md)).
+
+### Mac: a 4K monitor at 60 Hz (3840 × 2160 points)
+
+An LG UltraFine 4K at 60 Hz (3840 × 2160 points at 1×; 3840 × 2130 points of
+the window on it). Frames presented a second by Gingham, updates applied a
+second by the others (max 60) · main thread busy.
+
+| Table | Live trades | Wide live trades | Order book | Trade feed |
+| --- | --- | --- | --- | --- |
+| **Gingham** | **60** · 28% | **60** · 33% | **60** · 32% | **60** · 45% |
+| NSTableView | 14 · 93% | 5 · 98% | 4 · 99% | 2 · 99% |
+| NSTableView, tuned | 18 · 93% | 6 · 98% | 16 · 96% | 6 · 98% |
+| NSTableView, cell-based | 56 · 95% | 19 · 98% | 48 · 98% | 20 · 97% |
+| NSCollectionView | 19 · 93% | 6 · 98% | 16 · 94% | 7 · 97% |
+| SwiftUI Table | stuck | stuck | stuck | stuck |
+| SwiftUI Table, tuned | 1 · 100% | 0 · 100% | stuck | 0 · 100% |
+
+Counted from the screen, Gingham's frames with new data were 57–58 a second
+(max 60). In a 3700 × 1890 window, which fits the screen, Gingham presented
+60 frames a second at 28–42% busy and the cell-based NSTableView applied
+22–59 updates a second ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1258.md)).
+
+MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, LG UltraFine 4K at 60 Hz,
+Gingham 1.1.3, Release builds, medians of 3 runs, 2026-11-24
+([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1345.md);
+the cell-based NSTableView's live trades, whose three runs there were
+invalid, [measured again](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1648.md)).
+
+### Mac: Binance's live tickers
+
+On Binance's live tickers (about 3,100 pairs, a live market, so the numbers
+vary), Gingham shows 67 frames with new data a second with its main thread
+17% busy, the cell-based NSTableView 63 at 27%, the tuned NSTableView and
+NSCollectionView 53 and 58 at 21% (default window,
+[results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-0906.md#binance-tickers)).
 
 ### Mac: sorting 1,000,000 rows by a text column
 
 A header click on a table of 1,000,000 rows, sorted in Finder's order
-(`localizedStandardCompare`): time until the sorted order is on the screen ·
-the longest the screen waited meanwhile.
+(`localizedStandardCompare`): by pair (about 500 distinct texts) or by
+account (nearly every row a different text), first in a fresh process, then
+by the other column, then by the first column again. Time until the sorted
+order is on the screen; Gingham is the fastest in every one, though the
+first sort by pair is close (0.07 s, the tuned and cell-based NSTableView
+0.09 s).
 
-| Table | By pair: about 500 distinct texts | By account: nearly every row a different text |
-| --- | --- | --- |
-| **Gingham** | 0.15 s · 16 ms | **0.18 s** · 14 ms |
-| NSTableView | 5.18 s · 5,183 ms | 7.99 s · 7,993 ms |
-| NSTableView, tuned | 0.16 s · 77 ms | 7.85 s · 79 ms |
-| NSTableView, cell-based | **0.09 s** · 8 ms | 7.83 s · 17 ms |
-| NSCollectionView | 0.11 s · 8 ms | 7.81 s · 35 ms |
-| SwiftUI Table | not sorted within 60 s | not sorted within 60 s |
-| SwiftUI Table, tuned | 0.92 s · 797 ms | 13.29 s · 890 ms |
+| Table | Pair | Then account | Pair again | Account | Then pair | Account again |
+| --- | --- | --- | --- | --- | --- | --- |
+| **Gingham** | **0.07 s** | **0.12 s** | **0.01 s** | **0.19 s** | **0.03 s** | **0.02 s** |
+| NSTableView | 5.17 s | 8.02 s | 5.22 s | 7.98 s | 5.23 s | 7.96 s |
+| NSTableView, tuned | 0.09 s | 7.92 s | 0.13 s | 7.91 s | 0.17 s | 0.08 s |
+| NSTableView, cell-based | 0.09 s | 7.85 s | 0.04 s | 7.90 s | 0.07 s | 0.07 s |
+| NSCollectionView | 0.11 s | 7.97 s | 0.07 s | 7.90 s | 0.08 s | 0.10 s |
+| SwiftUI Table | not sorted within 60 s | | | not sorted within 60 s | | |
+| SwiftUI Table, tuned | 0.94 s | 13.30 s | 0.88 s | 13.19 s | 0.93 s | 0.91 s |
 
-The tuned AppKit tables compare each distinct text once and sort in the
-background. With 500 texts that's quick, and the cell-based NSTableView sorts
-by pair faster than Gingham (0.09 s to 0.15 s); with nearly a million it
-takes them about 8 seconds, Gingham 0.18 s. The typical NSTableView sorts on
-the main thread, and the app stops meanwhile.
+The tuned AppKit tables sort in the background and keep the keys of the
+columns they sorted; the typical NSTableView sorts on the main thread, and
+the app stops for the whole sort.
+
+MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, Gingham 1.1.3, Release builds,
+medians of 3 runs, 2026-11-24 ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-0906.md#sort-by-pair)).
 
 ### iPhone: scrolling while values change
 
 UITableView and UICollectionView as typically written (changed rows
 reconfigured, as Apple recommends) and tuned (changed values set on the cells
 in view), and SwiftUI's List, with 100,000 rows and 1,000 changes a second.
-What the render server showed: XCUITest's real flicks (UIKit's own scroll
-metric, the median of five flicks) and Instruments' Animation Hitches during
-the app's scroll tests (one run of each table's three tests).
+What the render server showed: Instruments' Animation Hitches during the
+app's scroll tests (steady, fast and flicks, one run each) and XCUITest's
+real flicks (UIKit's own scroll metric, the median of five flicks).
 
-| Table | Real flicks: frames a second · hitches | Animation Hitches: hitch time a second |
+| Table | Animation Hitches: hitch time a second | Real flicks (Gingham 1.1.1): frames a second · hitches |
 | --- | --- | --- |
-| **Gingham** | 117.6 · 0 | 1.6–8.3 ms |
-| UITableView | 111.1 · 294 (72.5 ms a second) | 503–507 ms |
-| UITableView, tuned | 119.0 · 0 | 1.0–3.6 ms |
-| UICollectionView | 116.0 · 0 | 0–2.1 ms |
-| UICollectionView, tuned | 118.7 · 0 | 0–9.9 ms |
-| SwiftUI List | 117.3 · 0 | 3.1–5.2 ms |
+| **Gingham** | 0–6.2 ms | 117.6 · 0 |
+| UITableView | 501–506 ms | 111.1 · 294 (72.5 ms a second) |
+| UITableView, tuned | 1.0–6.2 ms | 119.0 · 0 |
+| UICollectionView | 0–2.1 ms | 116.0 · 0 |
+| UICollectionView, tuned | 2.1 ms | 118.7 · 0 |
+| SwiftUI List | 1.6–4.2 ms | 117.3 · 0 |
 
 The app's own meter (its main thread's frame callbacks, which don't see the
 render server's work), scrolling a flick a second, four down and four up,
@@ -154,24 +217,22 @@ second · main thread busy.
 
 | Table | 100,000 rows, 1,000 changes/s | 1,000,000 rows, 10,000 changes/s |
 | --- | --- | --- |
-| **Gingham** | 120 · **20%** | 120 · **31%** |
-| UITableView | 62.4 · 82% | 6.3 · 98% |
-| UITableView, tuned | 120 · 36% | 120 · 40% |
-| UICollectionView | 120 · 43% | 120 · 40% |
-| UICollectionView, tuned | 120 · 40% | 120 · 41% |
-| SwiftUI List | 119.7 · 40% | 120 · 48% |
+| **Gingham** | 120 · **19%** | 120 · **29%** |
+| UITableView | 62.4 · 80% | 7 · 99% |
+| UITableView, tuned | 120 · 40% | 120 · 41% |
+| UICollectionView | 120 · 43% | 120 · 41% |
+| UICollectionView, tuned | 120 · 39% | 120 · 41% |
+| SwiftUI List | 120 · 40% | 120 · 41% |
 
 On the iPhone, well-written UIKit tables and SwiftUI's List keep up too;
-Gingham does it with its main thread less busy (20% and 31% to their
-36–48%), and the typical UITableView falls behind, to 6 frames a second with
-a million rows on the app's meter. SwiftUI's Table shows only its first
-column on the iPhone and isn't compared there.
+Gingham does it with its main thread less busy (19% and 29%, to their
+39–43%), and the typical UITableView falls behind, to 7 frames a second
+with a million rows on the app's meter. SwiftUI's Table shows only its
+first column on the iPhone and isn't compared there.
 
-Measured on 2026-11-23 on a MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, its
-built-in 120 Hz display, and an iPhone 15 Pro Max, iOS 27.2.1; Gingham 1.1.1,
-Release builds, medians of 3 runs. Every column of every run, with the lowest
-and highest, is in the bench's [results](https://github.com/digitalglobeby/gingham-bench/tree/main/results);
-how each table is set up and measured, in its [README](https://github.com/digitalglobeby/gingham-bench#how-its-measured).
+iPhone 15 Pro Max, iOS 27.2.1, 120 Hz, Gingham 1.1.3, Release build, medians
+of 3 runs, 2026-11-24; the real flicks: Gingham 1.1.1, 2026-11-23
+([results](https://github.com/digitalglobeby/gingham-bench/tree/main/results/ios)).
 
 ## Features
 
@@ -260,7 +321,7 @@ URL, and add the `Gingham` library to your app target. In a `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.1.1"),
+    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.1.3"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["Gingham"]),
