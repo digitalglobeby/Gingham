@@ -53,6 +53,10 @@ them in view in the default window), an **order book** (200,000 rows, about
 feed** (1,000,000 rows, about 300,000 row changes a second). If you can make
 a competitor faster, open a pull request there: it will be measured.
 
+The tables below were measured with Gingham 1.1.3 unless their note says
+otherwise. Version 1.1.4 only lowers Gingham's own GPU time for large tables;
+the 4K table at 120 Hz was measured again with it.
+
 ### Mac: the default window (1000 × 640 points)
 
 Frames with new data a second (max 120) · main thread busy (less leaves more
@@ -113,22 +117,17 @@ Gingham, updates applied a second by the others (max 120) · main thread busy.
 
 | Table | Live trades | Wide live trades | Order book | Trade feed |
 | --- | --- | --- | --- | --- |
-| **Gingham** | **120** · 26% | **116–120** · 50–68% | **115–120** · 44–67% | **120** · 79% |
-| NSTableView | 14 · 97% | 5 · 99% | 4 · 100% | 2 · 100% |
-| NSTableView, tuned | 19 · 97% | 6 · 99% | 16 · 96% | 7 · 99% |
-| NSTableView, cell-based | 40 · 98% | 17 · 99% | 37 · 99% | 20 · 99% |
-| NSCollectionView | 19 · 97% | 6 · 99% | 16 · 96% | 7 · 99% |
+| **Gingham** | **120** · 35% | **120** · 51% | **120** · 46% | **120** · 80% |
+| NSTableView | 14 · 97% | 5 · 100% | 4 · 100% | 2 · 100% |
+| NSTableView, tuned | 20 · 96% | 6 · 99% | 16 · 96% | 7 · 99% |
+| NSTableView, cell-based | 39 · 98% | 17 · 99% | 36 · 98% | 20 · 99% |
+| NSCollectionView | 20 · 96% | 6 · 99% | 16 · 96% | 7 · 99% |
 | SwiftUI Table | stuck | stuck | stuck | stuck |
-| SwiftUI Table, tuned | 1 · 100% | 0 · 100% | stuck | 0 · 100% |
-
-Here Gingham is at its limit: for wide live trades and the order book the
-table gives the range of two sessions measured the same way (the
-[second](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1215.md)
-got 120 frames on both, at 50% and 44%).
+| SwiftUI Table, tuned | 1 · 100% | 0 · 100% | stuck | stuck |
 
 MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, built-in display at 120 Hz
-(2056 × 1329 points at 2×), Gingham 1.1.3, Release builds, medians of 3
-runs, 2026-11-24 ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1456.md)).
+(2056 × 1329 points at 2×), Gingham 1.1.4, Release builds, medians of 3
+runs, 2026-11-25 ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-25-0100.md)).
 
 ### Mac: a 4K monitor at 60 Hz (3840 × 2160 points)
 
@@ -321,7 +320,7 @@ URL, and add the `Gingham` library to your app target. In a `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.1.3"),
+    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.1.4"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["Gingham"]),
