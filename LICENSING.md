@@ -60,5 +60,4 @@ Write to d.polikhranidi+gingham@gmail.com.
 
 The optional GinghamICU library is licensed the same way. The ICU it is built
 with isn't: it is ICU (the Unicode license) and code of swift-foundation-icu
-(the Apache License 2.0), under their licenses (`THIRD-PARTY-NOTICES.md` in
-the binary package, `Vendor/CollationICU/LICENSE.md` here).
+(the Apache License 2.0), under their licenses (see `THIRD-PARTY-NOTICES.md`).

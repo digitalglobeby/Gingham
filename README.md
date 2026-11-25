@@ -12,10 +12,10 @@
 </p>
 
 **On a MacBook Pro (M1 Max, 120 Hz), Gingham shows a live order book of
-200,000 rows with about 243,500 row changes a second at 120 frames a second,
-its main thread 33% busy**; in the same 2040 × 1080-point table, the fastest
-NSTableView we could write updates 76 times a second and a typical one 10,
-their main threads 97% and 99% busy.
+200,000 rows with about 243,500 row changes a second, presenting 120 frames
+a second with its main thread 33% busy**; in the same 2040 × 1080-point
+table, the fastest NSTableView we could write applies 76 updates a second
+and a typical one 10, their main threads 97% and 99% busy.
 
 https://github.com/user-attachments/assets/3a48cb81-c19a-44de-a020-48b649b5da5f
 
@@ -55,7 +55,7 @@ a competitor faster, open a pull request there: it will be measured.
 
 The tables below were measured with Gingham 1.1.3 unless their note says
 otherwise. Version 1.1.4 only lowers Gingham's own GPU time for large tables;
-the 4K table at 120 Hz was measured again with it.
+the 3840 × 2160-point table at 120 Hz was measured again with it.
 
 ### Mac: the default window (1000 × 640 points)
 
@@ -101,19 +101,23 @@ Frames presented a second by Gingham, updates applied a second by the others
 | SwiftUI Table, tuned | 2 · 100% | 1 · 100% | stuck | 0 · 100% |
 
 As above, the screen capture can't count above about 110 a second, so the
-table gives the frames Gingham reports reaching the screen and, for the
-others, the times a second they were given new data to show (the most they
-can have shown).
+table gives, for Gingham, the frames it presented (its own count) and, for
+the others, the updates they applied. Both are the most frames with new data
+a table can have shown: a frame presented may show no new data, and an
+update applied may not reach the screen. The screen capture's counts, no
+higher than these for any table (the order book: Gingham 108, the cell-based
+NSTableView 72), are in the results.
 
 MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, built-in display at 120 Hz
 (2056 × 1329 points at 2×), Gingham 1.1.3, Release builds, medians of 3
 runs, 2026-11-24 ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-24-1037.md)).
 
-### Mac: a 4K table at 120 Hz (3840 × 2160 points)
+### Mac: a 3840 × 2160-point table at 120 Hz
 
-A table larger than the MacBook's screen (2056 × 1290 points of the window
-on it), what a 4K display at 120 Hz would show. Frames presented a second by
-Gingham, updates applied a second by the others (max 120) · main thread busy.
+A window of 3840 × 2160 points on the MacBook's display at 2×, a table of
+7680 × 4320 pixels, of which about a third (2056 × 1290 points) is on the
+screen. Frames presented a second by Gingham, updates applied a second by
+the others (max 120) · main thread busy.
 
 | Table | Live trades | Wide live trades | Order book | Trade feed |
 | --- | --- | --- | --- | --- |
@@ -124,6 +128,10 @@ Gingham, updates applied a second by the others (max 120) · main thread busy.
 | NSCollectionView | 20 · 96% | 6 · 99% | 16 · 96% | 7 · 99% |
 | SwiftUI Table | stuck | stuck | stuck | stuck |
 | SwiftUI Table, tuned | 1 · 100% | 0 · 100% | stuck | stuck |
+
+At this size the screen capture costs too much to run alongside: with it,
+Gingham's rate fell to 60 a second (the results' first column). The runs
+above went without it, so nothing outside the table counted Gingham's 120.
 
 MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, built-in display at 120 Hz
 (2056 × 1329 points at 2×), Gingham 1.1.4, Release builds, medians of 3
@@ -238,9 +246,10 @@ of 3 runs, 2026-11-24; the real flicks: Gingham 1.1.1, 2026-11-23
 A table view for business data on the Mac, iPad and iPhone, drawn by the
 GPU, with an API that mirrors `NSTableView`, so apps migrate without
 reworking their patterns. One `GHTableView` class works in AppKit and in
-UIKit, with the same data source, delegate and features; on the iPad and
-iPhone it takes touches, the pointer, a hardware keyboard and VoiceOver as
-the system's own controls do.
+UIKit, with the same data source and delegate; on the iPad and iPhone it
+takes touches, the pointer, a hardware keyboard and VoiceOver as the
+system's own controls do. What is the Mac's for now is listed under
+[Documentation](#documentation).
 
 - **Frozen columns** at the leading and trailing edges, and **column groups**
   under a common header.
@@ -258,9 +267,10 @@ the system's own controls do.
   what changed; the table keeps the rows sorted itself as values change
   (`sortsRows`), or `reorderRows(from:to:)` re-sorts without reading the rows
   again.
-- **Tens of millions of rows** through a column source (`GHColumnSource`):
-  the table's sort, search and totals read your data on all cores, off the
-  main thread, and keep no values.
+- **Tens of millions of rows** on the Mac: a table of 10,000,000 rows sorts
+  by text in about 2 seconds (M1 Max). With a column source
+  (`GHColumnSource`), the table's sort, search and totals read your data on
+  all cores, off the main thread, and keep no values.
 - **Text sorts like Finder**, in `localizedStandardCompare`'s order, a million
   texts in about 0.2 seconds in the background, for every European language,
   Cyrillic, Greek, Hebrew, Arabic, Devanagari, kana, Han and Hangul; the
@@ -269,7 +279,7 @@ the system's own controls do.
 - **NSTableView's patterns**: the same data source, delegate, sort
   descriptor and notification names, a diffable data source like
   `NSTableViewDiffableDataSource`, and an adapter for an existing
-  `NSTableViewDataSource`.
+  `NSTableViewDataSource` (these two on the Mac).
 - **Context menus** built by the app, with Finder's rules for which rows a
   click is for.
 - **Column customization**: resize, move, hide and show columns, saved and
@@ -320,7 +330,7 @@ URL, and add the `Gingham` library to your app target. In a `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.1.4"),
+    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.2.0"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["Gingham"]),
@@ -328,8 +338,8 @@ targets: [
 ```
 
 For ICU's collation keys (Thai, Chinese text with many words read otherwise,
-or ICU's own order), also add the optional `GinghamICU` library, `.product(name: "GinghamICU", package: "Gingham")` (about 9 MB per
-architecture, see [GinghamICU](GinghamICU.md)). Apps without it don't build its ICU.
+or ICU's own order), also add the optional `GinghamICU` library, `.product(name: "GinghamICU", package: "Gingham")` (about 9 MB
+in a Mac app, 5 MB in an iPhone or iPad app, see [GinghamICU](GinghamICU.md)). Apps without it don't carry its ICU.
 
 ### Versions
 
@@ -348,8 +358,9 @@ cases until the next major version.
 > `GHColumnItem`, `GHDataColumnItem`, `GHColumnPin` and
 > `GHColumnVisibility.State` are `@frozen` and switch without it. So are
 > `GHCellValue` and `GHNamedColor` (since 1.0.1, so that an app makes values
-> as fast as Gingham does), but they may still get new cases in a minor
-> version: keep a `default`.
+> as fast as Gingham does), but a minor version may still add cases to them,
+> and a `switch` over them without a `default` would then stop compiling:
+> keep one.
 
 ## Quick start
 
@@ -455,9 +466,13 @@ See [LICENSING.md](LICENSING.md) and [LICENSE](LICENSE);
 
 ## Documentation
 
-The package has full DocC documentation: API reference for every public type
-and member, and articles (written for the Mac; on the iPad the API is the
-same, and the table above maps the interactions):
+The package has DocC documentation: a reference of its public types and
+members, for the Mac and for the iPad and iPhone, and articles written for
+the Mac. On the iPad and iPhone the table's API is the same, but for what is
+the Mac's for now: `GHDataTable` (SwiftUI), the diffable data source, the
+data source adapter, printing and PDF, and a few AppKit members such as
+`tableColumn(withIdentifier:)` and `editColumn(_:row:with:select:)`. Drag and
+drop and menus use UIKit's types (the table above maps the interactions).
 
 | Article | Covers |
 | --- | --- |
@@ -474,9 +489,10 @@ same, and the table above maps the interactions):
 | Menus and Actions | Row context menus, actions, copying |
 | Appearance | Sizes, row tints and markers, selection style, scrolling |
 | Keyboard and Accessibility | Keyboard commands, type select, VoiceOver |
-| Performance and Threading | What the table reads and when, large data, tens of millions of rows, live updates, memory |
+| Performance and Threading | What the table reads and when, large data, column sources, live updates, memory |
 | Benchmarks | Gingham against Apple's tables on the Mac and the iPhone: what was measured, the results, the open bench |
 | Using Gingham in SwiftUI | `GHDataTable`: columns, selection, sorting, editing, menus (the Mac's) |
+| Licensing | The free limit, registering a key, what a key covers |
 | Release Notes | What each version brought |
 
 Read it at **https://digitalglobeby.github.io/Gingham/documentation/gingham**.

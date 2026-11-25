@@ -3,12 +3,66 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.2.0
+
+Live updates take less of the main thread and the GPU, a table that can't
+be seen takes less memory, and fixes to sorting, summaries and editing. No
+API changes.
+
+### Faster and leaner
+
+- **Less main-thread time for live updates**: a batch of row updates does
+  less work for each changed cell, and no longer goes over every cell in
+  view, which counts most in large windows and busy feeds.
+- **Unchanged cells stay as they are**: when rows are updated, their cells
+  whose values didn't change keep what was drawn of them, also when the
+  rows move in a live sort, a filter or a group.
+- **Faster changing numbers**: numbers that change in place, such as a
+  feed's prices, are laid out for their cells on all cores, and a stream of
+  new values no longer crowds out the other text the table has laid out.
+- **Less memory when a table isn't visible**: a second after a table can no
+  longer be seen (its window minimized, covered or hidden, the table hidden
+  or out of its window), it gives back the memory of its drawn frames. It
+  draws at once when it shows again.
+- **Less GPU time for row backgrounds**, in the default rounded style too;
+  frames look the same.
+
+### Fixed
+
+- A sort by a number and then text, or by text with a comparison other than
+  the default, no longer loses rows or shows some twice where Foundation's
+  comparison contradicts itself (names in capitals with Ё or Й, Greek with
+  tonos).
+- Text where Foundation's comparison contradicts itself sorts the same
+  whatever order the data source gives its rows in, and faster.
+- A summary formula's minimum and maximum of a column are right after rows
+  are removed or moved.
+- A row added without a sort value while the live sort holds the rows (the
+  pointer over them, a large batch placed in the background) goes to its
+  place instead of staying at the end.
+- Totals kept up to date by targeted updates no longer drift from the exact
+  sum after many updates.
+- `GHDataTable`: a `Decimal` such as 0.07 is exactly 0.07 in filters and
+  exports, an edit writes the `Decimal` its digits say, and an edit to a
+  number a `Decimal` can't hold is refused instead of crashing.
+- The focused cell follows its record across `reloadData()` also when the
+  first row has no identity.
+- `isSearchingRows` and `isBusy` end when the data source is released
+  during a large table's search.
+
+### Documentation
+
+- One reference for macOS and iOS: members only iOS has get pages of their
+  own, and each page names the platforms that have it. Getting Started is
+  written for the binary package, and the articles say what an app can rely
+  on: what is read when and on which thread, costs in time and memory, and
+  limits.
+
 ## 1.1.4
 
-- **Less GPU time for large tables**: large tables take about a fifth less
-  GPU time to draw, and their frames look the same. An order book of
-  3840 × 2160 points: 371–378 ms of GPU time a second, now 283–294 ms
-  (MacBook Pro M1 Max, Release).
+- **Less GPU time for large tables**: the table takes less GPU time of its
+  own to draw large tables, and their frames look the same. The window
+  server's time to show the window isn't part of it.
 
 ## 1.1.3
 

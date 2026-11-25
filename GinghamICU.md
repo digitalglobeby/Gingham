@@ -1,25 +1,22 @@
 # GinghamICU
 
-Collation keys from an ICU built into the app, in an optional library of
-Gingham's package, in exactly the order of `localizedStandardCompare`
-(Finder's). Since 1.5.0 Gingham makes its own keys (`GHTextKeys`, the
-default) for European languages, Cyrillic, Greek and the main scripts, and
-they are faster: a million texts in 0.17–0.21 s against ICU's 0.38–0.40 s.
-Add this library for scripts Gingham doesn't key yet, or texts where its keys
-leave many pairs to compare (Chinese readings).
+Collation keys from ICU, in an optional library of Gingham's package, in
+the order of `localizedStandardCompare` (Finder's). Gingham makes its own
+keys (`GHTextKeys`, the default) for European languages, Cyrillic, Greek and
+the main scripts, and they are faster: a million texts in 0.17–0.21 s
+against ICU's 0.38–0.40 s. Add this library for scripts Gingham doesn't key
+yet (Thai), or texts where its keys leave many pairs to compare (Chinese
+readings).
 
 > [!IMPORTANT]
-> **This adds about 8.7 MB per architecture to your app** (ICU's code and its
-> collation data): about 17 MB in a universal (Intel + Apple silicon) app,
-> which the Mac App Store doesn't thin. From source it also adds about 30
-> seconds to a clean build. Use it when your tables sort many texts in
-> scripts Gingham's own keys don't cover. Gingham doesn't depend on it, and
-> apps that don't add it don't build it.
+> **This adds about 9 MB to a Mac app and about 5 MB to an iPhone or iPad
+> app** (ICU's code and its collation data). Use it when your tables sort
+> many texts in scripts Gingham's own keys don't cover. Gingham doesn't
+> depend on it, and apps that don't add it don't carry it.
 
-It is safe for the Mac App Store: the ICU is linked into the app
-(swift-foundation-icu's) and imports nothing from the
-system's ICU, whose collation functions aren't public API. With Xcode's
-default for apps (Strip Linked Product: All Symbols), none of its function
+It is safe for the Mac App Store: it brings its own ICU and calls nothing of
+the system's, whose collation functions aren't public API. With Xcode's
+default for apps (Strip Linked Product: All Symbols), none of ICU's function
 names stay in the app either.
 
 ## Use
@@ -45,29 +42,28 @@ table.collationKeyProvider = GHBundledICUCollation()
 ```
 
 That's all: tables that sort rows themselves (`sortsRows`) use the keys for
-text columns. Rows whose keys are equal are compared, and every pair of
-neighbors is checked with `localizedStandardCompare`, so the order never
-differs from comparing (keys that disagree make the table sort by comparing).
+text columns, and the order is the one comparing with
+`localizedStandardCompare` gives.
 
 ## Why a separate library
 
-It keeps Gingham free of the ICU's size and build time for everyone else.
-Its version is Gingham's: GinghamICU 1.3 goes with Gingham 1.3.
+It keeps Gingham free of ICU's size for everyone else. Its version is
+Gingham's: both come in each release, and an app uses the two of the same
+version.
 
 ## The ICU inside
 
-It is swift-foundation-icu's ICU 76.1 with only the data collation reads:
-the collation tree and two small files for language tags' extensions, 4.3 MB
-of ICU's 34 MB. Every collator (1,713: each one ICU has, with each collation
-type, and each one a locale of Foundation's asks for) makes the same keys as
-with all the data. Its module is private to the framework, so an app with
-swift-foundation-icu's `_FoundationICU` can have both.
+It is ICU 76.1 (swift-foundation-icu's) with collation's data: every
+collator (1,713: each one ICU has, with each collation type, and each one a
+locale of Foundation's asks for) makes the same keys as with all of ICU's
+data. An app that also uses swift-foundation-icu's `_FoundationICU` can have
+both.
 
 ## Binary
 
-`GinghamICU.xcframework` (macOS, iOS and the iOS simulator, arm64) links the
-binary `Gingham.xcframework` and has the ICU linked inside: it exports only
-GinghamICU's own symbols and imports nothing from the system's ICU.
+`GinghamICU.xcframework` (macOS, iOS and the iOS simulator, arm64) goes with
+the binary `Gingham.xcframework` of the same version. It exports only
+GinghamICU's own symbols and calls nothing of the system's ICU.
 
 ## License
 
