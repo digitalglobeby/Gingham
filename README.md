@@ -17,7 +17,7 @@ its main thread 33% busy**; in the same 2040 × 1080-point table, the fastest
 NSTableView we could write updates 76 times a second and a typical one 10,
 their main threads 97% and 99% busy.
 
-<!-- The new video goes here, on a line of its own: upload gingham-comparison-2026-11-24.mp4 (24 s, the order book at 2040 × 1080: Gingham, NSTableView, NSTableView cell-based, SwiftUI Table, each window cut like the picture below) in GitHub's web editor and paste its URL. -->
+https://github.com/user-attachments/assets/3a48cb81-c19a-44de-a020-48b649b5da5f
 
 ![Gingham, NSTableView, NSTableView in its cell-based mode and SwiftUI Table showing the same live order book](Assets/comparison.png)
 
