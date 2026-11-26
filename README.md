@@ -249,6 +249,14 @@ every row: it's per developer and covers a major version (all of 1.x), and
 apps shipped with it stay licensed. Register it at launch with
 `GHLicense.register(_:)`.
 
+| License | Price, per developer and major version | For |
+| --- | --- | --- |
+| Indie | $199 | A solo developer, or a company with less than $250,000 a year in revenue |
+| Business | $599 | Any company |
+| Enterprise | By agreement | Priority support and the source in escrow |
+
+Open-source apps get a key for free.
+
 - [Buy a license key](mailto:d.polikhranidi+gingham@gmail.com?subject=Gingham%20license%20key)
 - [Get a 30-day trial key](mailto:d.polikhranidi+gingham@gmail.com?subject=Gingham%20trial%20key)
 

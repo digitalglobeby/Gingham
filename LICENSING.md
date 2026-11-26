@@ -54,6 +54,15 @@ for free.
 
 ### Buying
 
+A key is per developer and per major version, with no subscription and no
+runtime fees:
+
+| License | Price | For |
+| --- | --- | --- |
+| Indie | $199 per developer | A solo developer, or a company with less than $250,000 a year in revenue |
+| Business | $599 per developer | Any company |
+| Enterprise | By agreement | Priority support and the source in escrow, released if Gingham is no longer maintained |
+
 Write to d.polikhranidi+gingham@gmail.com.
 
 ## GinghamICU
