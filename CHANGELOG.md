@@ -3,6 +3,19 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.2.1
+
+A window with a table resizes as fast as the pointer moves. No API changes.
+
+- **Live resizing follows the pointer**: dragging the edge of a window with
+  a large table applied the new size up to half a second late on the Mac.
+  Each step of the resize now draws without waiting, and the table is never
+  shown stretched.
+- **The table stays live while a window fills the screen**: during the
+  green button's Fill and the full-screen animation, the table now shows its
+  updates. (While a window zooms after a double click on its title bar,
+  macOS pauses every app's drawing.)
+
 ## 1.2.0
 
 Live updates take less of the main thread and the GPU, a table that can't

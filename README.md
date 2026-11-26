@@ -412,7 +412,7 @@ URL, and add the `Gingham` library to your app target. In a `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.2.0"),
+    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.2.1"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["Gingham"]),
