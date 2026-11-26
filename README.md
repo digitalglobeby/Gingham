@@ -24,13 +24,15 @@ NSTableView's API, drawn by the GPU, free up to 10,000 rows a table.
 - **Measured by an open benchmark** you can run yourself, including where
   Gingham isn't ahead.
 
-https://github.com/user-attachments/assets/3a48cb81-c19a-44de-a020-48b649b5da5f
+https://github.com/user-attachments/assets/09160daf-4d3b-414d-9f89-58f1b99af4fa
 
-![Gingham, NSTableView, NSTableView in its cell-based mode and SwiftUI Table showing the same live order book](Assets/comparison.png)
+![Gingham, NSTableView, NSTableView in its cell-based mode and SwiftUI Table with rows identified by position showing the same live order book](Assets/comparison.png)
 
-The same live order book in Gingham, in NSTableView as apps typically write
-it, in its cell-based mode tuned by hand and in SwiftUI's Table (moments of
-a recording, each window cut to its columns).
+The same live order book in Gingham 1.2.0, in NSTableView as apps typically
+write it, in its cell-based mode tuned by hand and in SwiftUI's Table with
+rows identified by their position, its fastest way we found (moments of a
+recording, each window cut to its columns). The numbers in the windows were
+measured live; the table under Benchmarks gives the medians of quiet runs.
 
 ## Features
 
