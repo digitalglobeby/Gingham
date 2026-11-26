@@ -26,6 +26,13 @@ API changes.
   draws at once when it shows again.
 - **Less GPU time for row backgrounds**, in the default rounded style too;
   frames look the same.
+- **Measured**: in the open bench's 3840 × 2160-point table on a MacBook Pro
+  (M1 Max, 120 Hz), the 1,000,000-row trade feed takes 61% of the main thread
+  instead of 80% with 1.1.4, the order book 38% instead of 46% and the wide
+  live trades 47% instead of 51%, at 120 frames a second with both; the live
+  trades stay at about a third (37%, 35% with 1.1.4). One set of 3 runs each
+  ([1.2.0](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-26-0356.md),
+  [1.1.4](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-25-0100.md)).
 
 ### Fixed
 
