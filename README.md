@@ -282,21 +282,22 @@ second · main thread busy.
 
 | Table | 100,000 rows, 1,000 changes/s | 1,000,000 rows, 10,000 changes/s |
 | --- | --- | --- |
-| **Gingham** | 120 · **19%** | 120 · **29%** |
-| UITableView | 62.4 · 80% | 7 · 99% |
+| **Gingham** | 120 · **19%** | 120 · **26%** |
+| UITableView | 63.1 · 81% | 7.1 · 99% |
 | UITableView, tuned | 120 · 40% | 120 · 41% |
-| UICollectionView | 120 · 43% | 120 · 41% |
+| UICollectionView | 120 · 42% | 120 · 41% |
 | UICollectionView, tuned | 120 · 39% | 120 · 41% |
-| SwiftUI List | 120 · 40% | 120 · 41% |
+| SwiftUI List | 119.8 · 40% | 120 · 41% |
 
 On the iPhone, well-written UIKit tables and SwiftUI's List keep up too;
-Gingham does it with its main thread less busy (19% and 29%, to their
-39–43%), and the typical UITableView falls behind, to 7 frames a second
+Gingham does it with its main thread less busy (19% and 26%, to their
+39–42%), and the typical UITableView falls behind, to 7 frames a second
 with a million rows on the app's meter. SwiftUI's Table shows only its
 first column on the iPhone and isn't compared there.
 
-iPhone 15 Pro Max, iOS 27.2.1, 120 Hz, Gingham 1.1.3, Release build, medians
-of 3 runs, 2026-11-24; the real flicks: Gingham 1.1.1, 2026-11-23
+iPhone 15 Pro Max, iOS 27.2.1, 120 Hz, Release build, medians of 3 runs; the
+app's meter: Gingham 1.2.0, 2026-11-26; Animation Hitches: Gingham 1.1.3,
+2026-11-24; the real flicks: Gingham 1.1.1, 2026-11-23
 ([results](https://github.com/digitalglobeby/gingham-bench/tree/main/results/ios)).
 
 ### Where Gingham isn't ahead
