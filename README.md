@@ -263,17 +263,17 @@ UITableView and UICollectionView as typically written (changed rows
 reconfigured, as Apple recommends) and tuned (changed values set on the cells
 in view), and SwiftUI's List, with 100,000 rows and 1,000 changes a second.
 What the render server showed: Instruments' Animation Hitches during the
-app's scroll tests (steady, fast and flicks, one run each) and XCUITest's
+app's scroll tests (steady, fast and flicks; the median of three recordings) and XCUITest's
 real flicks (UIKit's own scroll metric, the median of five flicks).
 
 | Table | Animation Hitches: hitch time a second | Real flicks (Gingham 1.1.1): frames a second · hitches |
 | --- | --- | --- |
-| **Gingham** | 0–6.2 ms | 117.6 · 0 |
-| UITableView | 501–506 ms | 111.1 · 294 (72.5 ms a second) |
-| UITableView, tuned | 1.0–6.2 ms | 119.0 · 0 |
-| UICollectionView | 0–2.1 ms | 116.0 · 0 |
-| UICollectionView, tuned | 2.1 ms | 118.7 · 0 |
-| SwiftUI List | 1.6–4.2 ms | 117.3 · 0 |
+| **Gingham** | 0–1.6 ms | 117.6 · 0 |
+| UITableView | 503–504 ms | 111.1 · 294 (72.5 ms a second) |
+| UITableView, tuned | 2.3–5.8 ms | 119.0 · 0 |
+| UICollectionView | 0–1.6 ms | 116.0 · 0 |
+| UICollectionView, tuned | 0–5.7 ms | 118.7 · 0 |
+| SwiftUI List | 2.6–5.7 ms | 117.3 · 0 |
 
 The app's own meter (its main thread's frame callbacks, which don't see the
 render server's work), scrolling a flick a second, four down and four up,
@@ -296,8 +296,8 @@ with a million rows on the app's meter. SwiftUI's Table shows only its
 first column on the iPhone and isn't compared there.
 
 iPhone 15 Pro Max, iOS 27.2.1, 120 Hz, Release build, medians of 3 runs; the
-app's meter: Gingham 1.2.0, 2026-11-26; Animation Hitches: Gingham 1.1.3,
-2026-11-24; the real flicks: Gingham 1.1.1, 2026-11-23
+app's meter and Animation Hitches: Gingham 1.2.0, 2026-11-26; the real
+flicks: Gingham 1.1.1, 2026-11-23
 ([results](https://github.com/digitalglobeby/gingham-bench/tree/main/results/ios)).
 
 ### Where Gingham isn't ahead
