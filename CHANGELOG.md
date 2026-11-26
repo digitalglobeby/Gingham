@@ -3,6 +3,25 @@
 Gingham follows semantic versioning: a new major version for changes that
 break the API. A license key covers a major version (see LICENSING.md).
 
+## 1.2.2
+
+The package downloads in under a megabyte instead of about 43. The
+frameworks are 1.2.1's: no code changes.
+
+- **A smaller package**: the package's repository no longer holds the
+  documentation's website, which SwiftPM downloaded with it (every version
+  of every page). Adding Gingham to an app now downloads under 1 MB.
+- **The documentation moved** to
+  https://digitalglobeby.github.io/Gingham/docs/; its old addresses lead
+  there.
+- **If Xcode or SwiftPM says a revision of Gingham "does not match
+  previously recorded value"**: the repository's history was made again
+  without the website, so versions up to 1.2.1 have new revisions. Update to
+  1.2.2 (in Xcode: File › Packages › Update to Latest Package Versions, or
+  `swift package update`); if the message stays, delete Gingham's file in
+  `~/Library/org.swift.swiftpm/security/fingerprints/` and resolve again.
+  `GHTableView.version` says 1.2.1: the frameworks are the same.
+
 ## 1.2.1
 
 A window with a table resizes as fast as the pointer moves. No API changes.

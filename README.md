@@ -26,7 +26,7 @@ NSTableView's API, drawn by the GPU, free up to 10,000 rows a table.
 
 https://github.com/user-attachments/assets/09160daf-4d3b-414d-9f89-58f1b99af4fa
 
-![Gingham, NSTableView, NSTableView in its cell-based mode and SwiftUI Table with rows identified by position showing the same live order book](Assets/comparison.png)
+![Gingham, NSTableView, NSTableView in its cell-based mode and SwiftUI Table with rows identified by position showing the same live order book](https://digitalglobeby.github.io/Gingham/readme/comparison.png)
 
 The same live order book in Gingham 1.2.0, in NSTableView as apps typically
 write it, in its cell-based mode tuned by hand and in SwiftUI's Table with
@@ -123,7 +123,7 @@ URL, and add the `Gingham` library to your app target. In a `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.2.1"),
+    .package(url: "https://github.com/digitalglobeby/Gingham", from: "1.2.2"),
 ],
 targets: [
     .target(name: "MyApp", dependencies: ["Gingham"]),
@@ -332,7 +332,7 @@ From the same results ([the bench's full list](https://github.com/digitalglobeby
 - The iPhone's well-written UIKit tables and SwiftUI's List keep up too,
   with their main thread busier.
 
-The other results, in [Benchmarks](https://digitalglobeby.github.io/Gingham/documentation/gingham/benchmarks)
+The other results, in [Benchmarks](https://digitalglobeby.github.io/Gingham/docs/documentation/gingham/benchmarks)
 and the bench's README: the default window, a 3840 × 2160-point table, an
 equal 30 updates a second, a 4K monitor, Binance's live tickers, sorting
 1,000,000 rows by text and by number, and the iPhone (1,000,000 rows at 120
@@ -370,7 +370,7 @@ drop and menus use UIKit's types (the table above maps the interactions).
 | Licensing | The free limit, registering a key, what a key covers |
 | Release Notes | What each version brought |
 
-Read it at **https://digitalglobeby.github.io/Gingham/documentation/gingham**.
+Read it at **https://digitalglobeby.github.io/Gingham/docs/documentation/gingham**.
 Symbol documentation also shows in Xcode's Quick Help (Option-click a symbol).
 
 ## Support

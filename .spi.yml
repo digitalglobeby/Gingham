@@ -1,5 +1,5 @@
 # The Swift Package Index (https://swiftpackageindex.com/digitalglobeby/Gingham).
-# Its Documentation link opens the documentation on GitHub Pages (it can't build
+# Its Documentation link opens the documentation on the website (it can't build
 # DocC from a binary target). It builds every platform and has no setting to
 # skip some: those the frameworks don't have (visionOS, tvOS, watchOS, Linux,
 # Wasm, Android) show as not compatible.
@@ -7,4 +7,4 @@ version: 1
 metadata:
   authors: Dalis Polikhranidi (Digital Globe)
 external_links:
-  documentation: https://digitalglobeby.github.io/Gingham/documentation/gingham
+  documentation: https://digitalglobeby.github.io/Gingham/docs/documentation/gingham
