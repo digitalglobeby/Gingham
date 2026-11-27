@@ -305,6 +305,9 @@ AppKit tables.
 MacBook Pro (M1 Max, 32 GB), macOS 27.2.1, built-in display at 120 Hz
 (2056 × 1329 points at 2×), Gingham 1.2.0, Release builds, medians of 3
 runs, 2026-11-26 ([results](https://github.com/digitalglobeby/gingham-bench/blob/main/results/2026-11-26-0255.md)).
+A second night, 2026-11-27, measured every cell again: 97% of the 1,127
+numbers agree within 10%, and Gingham's numbers moved by at most a point of the
+main thread and 0.1 W ([the comparison](https://github.com/digitalglobeby/gingham-bench#results)).
 
 ### Where Gingham isn't ahead
 
