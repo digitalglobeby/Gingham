@@ -324,9 +324,10 @@ From the same results ([the bench's full list](https://github.com/digitalglobeby
   busy (40% against 57%), while the Mac draws more power with it (1.31 W
   against 0.57 W).
 - The Mac draws more power with Gingham in a 3840 × 2160-point table on
-  the wide trades and the trade feed (4.62 and 7.27 W against 3.64–4.95 W
-  with the AppKit tables, while Gingham shows 120 updates a second and they
-  2–21), and on Binance's tickers than with the tuned NSTableView,
+  the MacBook's own display (2×, 120 Hz) on the wide trades and the trade
+  feed (4.62 and 7.27 W against 3.64–4.95 W with the AppKit tables, while
+  Gingham shows 120 updates a second and they 2–21; on a 4K monitor at
+  60 Hz it draws less in all four), and on Binance's tickers than with the tuned NSTableView,
   NSCollectionView and the slot-based SwiftUI Table (0.41 W against
   0.33–0.37 W).
 - Memory: Gingham's footprint is larger than the view-based tables' on the
